@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Card {
+  id     Int    @id @default(autoincrement())
+  name   String
+  type   String
+  effect Json
+  rarity String
+}
+
+model Character {
+  id               Int            @id @default(autoincrement())
+  name             String
+  classId          Int
+  specializationId Int
+  level            Int            @default(1)
+  experience       Int            @default(0)
+  stats            Json
+  ownerId          Int
+  gameSessionId    Int
+  Class            Class          @relation(fields: [classId], references: [id])
+  GameSession      GameSession    @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+  User             User           @relation(fields: [ownerId], references: [id])
+  Specialization   Specialization @relation(fields: [specializationId], references: [id])
+}
+
+model Class {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String
+  Character      Character[]
+  Specialization Specialization[]
+}
+
+model Game {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  rules       String
+  minPlayers  Int
+  maxPlayers  Int
+  avgPlayTime Int
+  complexity  String
+  GameSession GameSession[]
+  Monster     Monster[]
+}
+
+model Map {
+  id          Int        @id @default(autoincrement())
+  name        String
+  config      Json       // Peut-être un objet ou des paramètres spécifiques pour la carte
+  background  String     // Chemin ou URL vers le fond d'écran de la carte
+  gameSession GameSession[] @relation
+}
+
+model GameSession {
+  id           Int         @id @default(autoincrement())
+  mapId        Int         @unique
+  code         Int
+  status       String
+  rulesVersion String
+  gameId       Int
+  Character    Character[]
+  Game         Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  Player       Player[]
+  Map          Map?        @relation(fields: [mapId], references: [id])
+}
+
+model Monster {
+  id       Int    @id @default(autoincrement())
+  name     String
+  stats    Json
+  lootTable Json
+  gameId   Int
+  Game     Game   @relation(fields: [gameId], references: [id])
+}
+
+model Player {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  gameSessionId Int
+  User          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  GameSession   GameSession  @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+}
+
+model Specialization {
+  id         Int         @id @default(autoincrement())
+  name       String
+  classId    Int
+  bonusStats Json
+  Character  Character[]
+  Class      Class       @relation(fields: [classId], references: [id])
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  username  String      @unique
+  email     String      @unique
+  password  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime
+  Character Character[]
+  Player    Player[]
+}
