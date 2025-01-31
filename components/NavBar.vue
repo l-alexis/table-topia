@@ -9,7 +9,6 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ms-auto align-items-center">
           <li class="nav-item"><nuxt-link to="/">Accueil</nuxt-link></li>
-          <li class="nav-item"><nuxt-link to="/games">Jeux</nuxt-link></li>
           <li v-if="!isLoggedIn" class="nav-item"><nuxt-link to="/account/login">Connexion</nuxt-link></li>
           <li v-if="!isLoggedIn" class="nav-item"><nuxt-link to="/account/register">Créer un compte</nuxt-link></li>
           <li v-if="isLoggedIn" class="nav-item" style="display: flex; align-items: center;">

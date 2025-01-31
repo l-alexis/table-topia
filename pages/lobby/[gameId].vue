@@ -2,7 +2,7 @@
   <div class="lobby">
     <header class="body">
       <div class="container text-center">
-        <h1>Lobby de {{ game.name }}</h1>
+        <h1>Lobby</h1>
 
         <transition name="fade" mode="out-in">
           <div v-if="isLoading" key="loading" class="loading-state">
@@ -50,7 +50,7 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const gameId = route.params.gameId;
-const userId = route.query.userId; // Récupérer userId depuis les paramètres de l'URL
+const userId = route.query.userId;
 
 const players = ref([]);
 const game = ref([]);

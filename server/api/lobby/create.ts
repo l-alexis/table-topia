@@ -2,6 +2,24 @@ export const runtime = "server";
 
 import { getPrismaClient } from "~/lib/prisma";
 
+const findLobbyByUserAndCode = async (userId: string, lobbyCode: string) => {
+  const prisma = getPrismaClient();
+  const user = await prisma.user.findFirst({ where: { id: parseInt(userId as string) } });
+  if (!user) {
+    return null;
+  }
+  const existingLobby = await prisma.gameSession.findFirst({
+    where: {
+      code: lobbyCode,
+      status: 'waiting',
+    },
+    include: {
+      User: true,
+    },
+  });
+  return existingLobby ? { gameSession: { gameSessionId: existingLobby.id, status: existingLobby.status, lobbyCode: existingLobby.code, users: existingLobby.User } } : null;
+};
+
 export default defineEventHandler(async (event) => {
   const prisma = getPrismaClient();
   const query = getQuery(event);
@@ -17,15 +35,22 @@ export default defineEventHandler(async (event) => {
     }));
 
     const userId = query.userId;
+    const lobbyCode = query.lobbyCode;
+    console.log(userId, lobbyCode);
 
     if (!userId) {
       return { error: "ID de l'utilisateur non fourni." };
     }
-
+    
     const user = await prisma.user.findFirst({ where: { id: parseInt(userId as string) } });
 
     if (!user) {
       return { error: "Utilisateur non trouvé." };
+    }
+
+    const existingLobby = await findLobbyByUserAndCode(userId, lobbyCode);
+    if (existingLobby) {
+      return existingLobby.gameSession;
     }
 
     let gameSession = await prisma.gameSession.create({

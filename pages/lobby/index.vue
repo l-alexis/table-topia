@@ -13,7 +13,7 @@
           <div class="join-lobby">
             <h2 class="text-center">Rejoindre un lobby</h2>
             <input v-model="lobbyCode" placeholder="Entrez le code du lobby" />
-            <button class="start-button" @click="joinLobby">Rejoindre</button>
+            <button class="start-button" @click="fetchLobby">Rejoindre</button>
           </div>
         </div>
       </div>
@@ -34,13 +34,48 @@ if (token) {
   const decoded = JSON.parse(atob(token.split('.')[1]));
   userId.value = decoded.id;
 }
- 
+
+const generateLobbyCode = () => {
+  return Math.floor(1000 + Math.random() * 9000);
+};
+
 const createLobby = () => {
-  router.push(`/lobby/create?userId=${userId.value}`);
+  lobbyCode.value = generateLobbyCode().toString();
+  router.push(`/lobby/create?userId=${userId.value}&lobbyCode=${lobbyCode.value}`);
+};
+
+const fetchLobby = async () => {
+  try {
+    const data = await $fetch(`/api/lobby/join`, {
+      method: 'GET',
+      params: {
+        userId: userId.value,
+        lobbyCode: lobbyCode.value
+      }
+    });
+    console.log(data);
+    
+    if (data && data.success) { 
+      router.push(`/lobby/create?userId=${userId.value}&lobbyCode=${lobbyCode.value}`);
+    } else {
+      console.error("Erreur lors de la récupération du lobby:", data.error);
+    }
+  } catch (err) {
+    console.error("Erreur lors de la récupération du lobby.");
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const joinLobby = () => {
-  router.push(`/lobby/join?lobbyCode=${lobbyCode.value}`);
+  if (!lobbyCode.value || lobbyCode.value.trim() === '') {
+    console.error('Erreur: lobbyCode est vide !');
+    return;
+  }
+
+  const enteredLobbyCode = lobbyCode.value;
+  router.push(`/lobby/join?userId=${userId.value}&lobbyCode=${enteredLobbyCode}`);
+
 };
 </script>
 
