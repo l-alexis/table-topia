@@ -77,7 +77,6 @@ const copyLobbyCode = () => {
 const fetchLobby = async () => {
   try {
     const data = await $fetch(`/api/lobby/${gameId}?userId=${userId}`);
-    console.log(data);
     gameSessionId.value = data.gameSessionId || '';
     players.value = data.users || [];
     lobbyCode.value = data.lobbyCode || '';

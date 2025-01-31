@@ -63,6 +63,7 @@ model GameSession {
   Game         Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
   Map          Map?        @relation(fields: [mapId], references: [id])
   User         User[]      @relation
+  createdAt    DateTime @default(now())
 }
 
 model Map {

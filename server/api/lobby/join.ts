@@ -16,7 +16,13 @@ export default defineEventHandler(async (event) => {
 
   try {
     const gameSession = await prisma.gameSession.findFirst({
-      where: { code: parseInt(lobbyCode as string), status: 'waiting' },
+      where: {
+        code: parseInt(lobbyCode as string),
+        status: 'waiting',
+      },
+      include: {
+        User: true,
+      },
     });
 
     if (!gameSession) {
@@ -30,18 +36,22 @@ export default defineEventHandler(async (event) => {
       return { error: "Utilisateur non trouvé." };
     }
 
-    await prisma.gameSession.update({
-      where: { id: gameSession.id },
-      data: {
-        User: {
-          connect: { id: user.id },
+    const playerCount = gameSession.User.length;
+    if (playerCount < 4) {
+      await prisma.gameSession.update({
+        where: { id: gameSession.id },
+        data: {
+          User: {
+            connect: { id: user.id },
+          },
         },
-      },
-    });
+      });
+    } else {
+      return { error: "La session est pleine. Maximum de 4 joueurs." };
+    }
 
     return { message: "Utilisateur ajouté au lobby avec succès.", success: true };
   } catch (error) {
-    console.error("Erreur lors de l'ajout de l'utilisateur au lobby:", error);
     return { error: "Impossible d'ajouter l'utilisateur au lobby." };
   }
 });

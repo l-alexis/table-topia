@@ -130,8 +130,6 @@ const calculateAvailableMoves = (currentPosition, diceValue) => {
     }
 
     const adjacentCases = mapConfig[position.toString()];
-    console.log('Position actuelle:', position, 'Mouvements restants:', remainingMoves);
-    console.log('Cases adjacentes:', adjacentCases);
 
     if (!adjacentCases) return;
 
