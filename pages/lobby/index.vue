@@ -53,7 +53,6 @@ const fetchLobby = async () => {
         lobbyCode: lobbyCode.value
       }
     });
-    console.log(data);
     
     if (data && data.success) { 
       router.push(`/lobby/create?userId=${userId.value}&lobbyCode=${lobbyCode.value}`);

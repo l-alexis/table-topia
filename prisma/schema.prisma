@@ -19,16 +19,12 @@ model Item {
 model Character {
   id               Int            @id @default(autoincrement())
   name             String
-  classId          Int
-  specializationId Int
   level            Int            @default(1)
   experience       Int            @default(0)
   stats            Json
-  ownerId          Int
-  gameSessionId    Int
-  GameSession      GameSession    @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
-  User             User           @relation(fields: [ownerId], references: [id])
-  Specialization   Specialization @relation(fields: [specializationId], references: [id])
+  specializationId Int?
+  Specialization   Specialization? @relation(fields: [specializationId], references: [id])
+  userCharacters   UserCharacter[] @relation
 }
 
 model GameSession {
@@ -37,11 +33,11 @@ model GameSession {
   code         Int
   status       String
   rulesVersion String
-  Character    Character[]
+  createdAt    DateTime @default(now())
+  UserCharacters UserCharacter[] @relation
   Map          Map?        @relation(fields: [mapId], references: [id])
   User         User[]      @relation
   Item         Item[]      @relation
-  createdAt    DateTime @default(now())
 }
 
 model Map {
@@ -49,33 +45,43 @@ model Map {
   name        String
   config      Json
   background  String
-  gameSession GameSession[] @relation
-  Monster     Monster[]
+  gameSessions GameSession[] @relation
+  Monsters    Monster[]  @relation
 }
 
 model Monster {
-  id       Int    @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   name     String
   stats    Json
   lootTable Json
-  Map     Map[]
+  Map      Map[]    @relation
 }
 
 model Specialization {
   id         Int         @id @default(autoincrement())
   name       String
-  classId    Int
   bonusStats Json
   Character  Character[]
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  username  String      @unique
-  email     String      @unique
-  password  String
-  createdAt DateTime    @default(now())
-  updatedAt DateTime
-  Character Character[]
-  GameSession GameSession[] @relation
+  id          Int            @id @default(autoincrement())
+  username    String         @unique
+  email       String         @unique
+  password    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime
+  GameSession GameSession[]   @relation
+  userCharacters UserCharacter[] @relation
+}
+
+model UserCharacter {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  gameSessionId Int?
+  characterId  Int
+  user        User       @relation(fields: [userId], references: [id])
+  character   Character  @relation(fields: [characterId], references: [id])
+  gameSession GameSession? @relation(fields: [gameSessionId], references: [id])
+
 }
