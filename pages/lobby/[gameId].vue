@@ -49,11 +49,9 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const router = useRouter();
-const gameId = route.params.gameId;
 const userId = route.query.userId;
 
 const players = ref([]);
-const game = ref([]);
 const map = ref([]);
 const gameSessionId = ref('');
 const isLoading = ref(true);
@@ -76,11 +74,10 @@ const copyLobbyCode = () => {
 
 const fetchLobby = async () => {
   try {
-    const data = await $fetch(`/api/lobby/${gameId}?userId=${userId}`);
+    const data = await $fetch(`/api/lobby/create?userId=${userId}`);
     gameSessionId.value = data.gameSessionId || '';
     players.value = data.users || [];
     lobbyCode.value = data.lobbyCode || '';
-    game.value = data.game || [];
     map.value = data.map || [];
   } catch (err) {
     error.value = "Erreur lors de la récupération du lobby.";
@@ -92,7 +89,7 @@ const fetchLobby = async () => {
 
 const startGame = () => {
   if (players.value.length >= minPlayers) {
-    router.push({ path: `/game/${gameId}`, query: { gameSessionId: Number(gameSessionId.value) } });
+    router.push({ path: `/map/1`, query: { gameSessionId: Number(gameSessionId.value) } });
   }
 };
 

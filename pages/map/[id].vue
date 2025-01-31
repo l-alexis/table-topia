@@ -2,8 +2,8 @@
   <div>
     <header class="body">
       <div class="container text-center">
-        <h1>{{ game.name }}</h1>
-        <p>{{ game.description }}</p>
+        <h1>TableTopia</h1>
+        <p>TableTopia est un RPG de fou malade.</p>
         <transition name="fade" mode="out-in">
           <div v-if="isLoading" key="loading" class="loading-state">
             <p>Chargement du jeu...</p>
@@ -59,7 +59,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { DiceRoll } from '@dice-roller/rpg-dice-roller';
 
-const game = ref({ name: 'TableTopia', description: 'Un jeu de plateau immersif !' });
 const isLoading = ref(false);
 const diceResult = ref(null);
 const eventOutcome = ref('');

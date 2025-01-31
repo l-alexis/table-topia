@@ -47,11 +47,6 @@ export default defineEventHandler(async (event) => {
       connect: { id: map.id },
     }));
 
-    const gameIdNumber = 1
-    const game = await prisma.game.findFirst().then((game) => ({
-      connect: { id: parseInt(gameIdNumber as string) },
-    }));
-
     const userId = query.userId;
     const lobbyCode = query.lobbyCode;
 
@@ -73,7 +68,6 @@ export default defineEventHandler(async (event) => {
     let gameSession = await prisma.gameSession.create({
       data: {
         Map: map,
-        Game: game,
         User: {
           connect: { id: user.id },
         },
@@ -90,6 +84,6 @@ export default defineEventHandler(async (event) => {
       users: [user]
     };
   } catch (error) {
-    return { error: "Impossible de créer la game session." };
+    return { error: error.message };
   }
 });

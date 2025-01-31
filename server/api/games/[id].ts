@@ -7,25 +7,25 @@ export default defineEventHandler(async (event) => {
   const { id } = event.context.params;
 
   try {
-    const game = await prisma.game.findUnique({
+    const map = await prisma.map.findUnique({
       where: {
         id: parseInt(id),
       },
     });
 
-    if (!game) {
+    if (!map) {
       throw createError({
         statusCode: 404,
-        statusMessage: 'Game not found',
+        statusMessage: 'Map not found',
       });
     }
 
-    return { game };
+    return { map };
   } catch (error) {
-    console.error('Error fetching game:', error);
+    console.error('Error fetching map:', error);
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch game',
+      statusMessage: 'Failed to fetch map',
     });
   }
 });

@@ -7,12 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Card {
+model Item {
   id     Int    @id @default(autoincrement())
   name   String
   type   String
   effect Json
   rarity String
+  GameSession GameSession[] @relation
 }
 
 model Character {
@@ -25,31 +26,9 @@ model Character {
   stats            Json
   ownerId          Int
   gameSessionId    Int
-  Class            Class          @relation(fields: [classId], references: [id])
   GameSession      GameSession    @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
   User             User           @relation(fields: [ownerId], references: [id])
   Specialization   Specialization @relation(fields: [specializationId], references: [id])
-}
-
-model Class {
-  id             Int              @id @default(autoincrement())
-  name           String
-  description    String
-  Character      Character[]
-  Specialization Specialization[]
-}
-
-model Game {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String
-  rules       String
-  minPlayers  Int
-  maxPlayers  Int
-  avgPlayTime Int
-  complexity  String
-  GameSession GameSession[]
-  Monster     Monster[]
 }
 
 model GameSession {
@@ -58,11 +37,10 @@ model GameSession {
   code         Int
   status       String
   rulesVersion String
-  gameId       Int
   Character    Character[]
-  Game         Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
   Map          Map?        @relation(fields: [mapId], references: [id])
   User         User[]      @relation
+  Item         Item[]      @relation
   createdAt    DateTime @default(now())
 }
 
@@ -72,6 +50,7 @@ model Map {
   config      Json
   background  String
   gameSession GameSession[] @relation
+  Monster     Monster[]
 }
 
 model Monster {
@@ -79,8 +58,7 @@ model Monster {
   name     String
   stats    Json
   lootTable Json
-  gameId   Int
-  Game     Game   @relation(fields: [gameId], references: [id])
+  Map     Map[]
 }
 
 model Specialization {
@@ -89,7 +67,6 @@ model Specialization {
   classId    Int
   bonusStats Json
   Character  Character[]
-  Class      Class       @relation(fields: [classId], references: [id])
 }
 
 model User {
