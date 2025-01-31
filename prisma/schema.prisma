@@ -52,25 +52,25 @@ model Game {
   Monster     Monster[]
 }
 
-model Map {
-  id          Int        @id @default(autoincrement())
-  name        String
-  config      Json       // Peut-être un objet ou des paramètres spécifiques pour la carte
-  background  String     // Chemin ou URL vers le fond d'écran de la carte
-  gameSession GameSession[] @relation
-}
-
 model GameSession {
   id           Int         @id @default(autoincrement())
-  mapId        Int         @unique
+  mapId        Int
   code         Int
   status       String
   rulesVersion String
   gameId       Int
   Character    Character[]
   Game         Game        @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  Player       Player[]
   Map          Map?        @relation(fields: [mapId], references: [id])
+  User         User[]      @relation
+}
+
+model Map {
+  id          Int        @id @default(autoincrement())
+  name        String
+  config      Json
+  background  String
+  gameSession GameSession[] @relation
 }
 
 model Monster {
@@ -80,14 +80,6 @@ model Monster {
   lootTable Json
   gameId   Int
   Game     Game   @relation(fields: [gameId], references: [id])
-}
-
-model Player {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  gameSessionId Int
-  User          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  GameSession   GameSession  @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
 }
 
 model Specialization {
@@ -107,5 +99,5 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime
   Character Character[]
-  Player    Player[]
+  GameSession GameSession[] @relation
 }

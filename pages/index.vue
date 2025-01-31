@@ -11,7 +11,7 @@
               <h2 class="text-white-50 mx-auto mt-2 mb-5">
                 TableTopia est une plateforme pour découvrir, partager et apprécier les jeux de société.
               </h2>
-              <nuxt-link class="btn btn-primary btn-lg" to="/games">Découvrir les jeux</nuxt-link>
+              <nuxt-link class="btn btn-primary btn-lg" to="/lobby">Découvrir le jeu</nuxt-link>
             </div>
             <slot />
           </div>

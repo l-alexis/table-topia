@@ -50,6 +50,7 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const gameId = route.params.gameId;
+const userId = route.query.userId; // Récupérer userId depuis les paramètres de l'URL
 
 const players = ref([]);
 const game = ref([]);
@@ -72,12 +73,13 @@ const copyLobbyCode = () => {
   }
 };
 
+
 const fetchLobby = async () => {
   try {
-    const data = await $fetch(`/api/lobby/${gameId}`);
-    
+    const data = await $fetch(`/api/lobby/${gameId}?userId=${userId}`);
+    console.log(data);
     gameSessionId.value = data.gameSessionId || '';
-    players.value = data.players || [];
+    players.value = data.users || [];
     lobbyCode.value = data.lobbyCode || '';
     game.value = data.game || [];
     map.value = data.map || [];
@@ -231,4 +233,3 @@ onMounted(() => {
   background-color: #1f6e8c;
 }
 </style>
-
