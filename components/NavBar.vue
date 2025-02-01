@@ -24,33 +24,28 @@
 </template>
 
 <script>
+import { ref, onMounted } from 'vue';
+
 export default {
-  data() {
+  setup() {
+    const isLoggedIn = ref(false);
+    const username = ref('');
+
+    onMounted(() => {
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          username.value = decoded.username;
+          isLoggedIn.value = true;
+        }
+      }
+    });
+
     return {
-      username: '',
+      isLoggedIn,
+      username,
     };
-  },
-  computed: {
-    isLoggedIn() {
-      return !!localStorage.getItem('token');
-    }
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem('token');
-      sessionStorage.clear();
-      this.username = '';
-      this.$router.push('/account/login').then(() => {
-          window.location.reload();
-        });
-    },
-  },
-  mounted() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      this.username = decoded.username;
-    }
   },
 };
 </script>
