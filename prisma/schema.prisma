@@ -34,6 +34,8 @@ model GameSession {
   status       String
   rulesVersion String
   createdAt    DateTime @default(now())
+  hostId       Int?
+  host         User?       @relation("HostRelation", fields: [hostId], references: [id])
   UserCharacters UserCharacter[] @relation
   Map          Map?        @relation(fields: [mapId], references: [id])
   User         User[]      @relation
@@ -73,6 +75,7 @@ model User {
   updatedAt   DateTime
   GameSession GameSession[]   @relation
   userCharacters UserCharacter[] @relation
+  hostedGames GameSession[]   @relation("HostRelation")
 }
 
 model UserCharacter {

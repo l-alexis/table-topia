@@ -28,14 +28,15 @@
                 Copier le code
               </button>
             </div>
-
-            <button 
+            <button v-if="isCreator"  
               @click="startGame" 
               :disabled="players.length < minPlayers"
-              class="start-button"
-            >
+              class="start-button">
               Lancer la partie
             </button>
+            <div v-else>
+              <p>En attente du créateur pour lancer la partie...</p>
+            </div>
           </div>
         </transition>
       </div>
@@ -50,6 +51,7 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const userId = route.query.userId;
+const isCreator = ref(false);
 
 const players = ref([]);
 const map = ref([]);
@@ -58,6 +60,7 @@ const isLoading = ref(true);
 const error = ref(null);
 const minPlayers = 2;
 const lobbyCode = ref('');
+const hostId = ref(null);
 
 const copyLobbyCode = () => {
   if (lobbyCode.value) {
@@ -79,13 +82,19 @@ const fetchLobby = async () => {
     players.value = data.users || [];
     lobbyCode.value = data.lobbyCode || '';
     map.value = data.map || [];
+    hostId.value = data.hostId || '';
+
+    if (hostId.value === parseInt(userId)) {
+      isCreator.value = true;
+    }
+
   } catch (err) {
+    console.log(err);
     error.value = "Erreur lors de la récupération du lobby.";
   } finally {
     isLoading.value = false;
   }
 };
-
 
 const startGame = () => {
   if (players.value.length >= minPlayers) {
